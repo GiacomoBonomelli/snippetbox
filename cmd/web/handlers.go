@@ -24,7 +24,6 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		app.logger.Error(err.Error(), "method", r.Method, "uri", r.URL.RequestURI())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -32,8 +31,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	// template as the response body.
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		app.logger.Error(err.Error(), "method", r.Method, "uri", r.URL.RequestURI())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, r, err) // Use the serverError() helper.
 	}
 }
 
