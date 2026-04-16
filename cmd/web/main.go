@@ -7,14 +7,18 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/GiacomoBonomelli/snippetbox/internal/models"
 	_ "github.com/go-sql-driver/mysql" // New import
 )
 
 // Define an application struct to hold the application-wide dependencies for the
 // web application. For now we'll only include the structured logger, but we'll
 // add more to this as development progresses.
+// Add a snippets field to the application struct. This will allow us to
+// use the SnippetModel type in our handlers.
 type application struct {
-	logger *slog.Logger
+	logger   *slog.Logger
+	snippets *models.SnippetModel
 }
 
 func main() {
@@ -51,8 +55,11 @@ func main() {
 	// before the main() function exits.
 	defer db.Close()
 
+	// Initialize a models.SnippetModel instance containing the connection pool
+	// and add it to the application dependencies.
 	app := application{
-		logger: logger,
+		logger:   logger,
+		snippets: &models.SnippetModel{DB: db},
 	}
 
 	// Use the Info() method to log the starting server message at Info severity
